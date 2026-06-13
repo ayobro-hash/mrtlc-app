@@ -13,6 +13,21 @@
   "dependencies": {
     "@capacitor/android": "^8.4.0",
     "@capacitor/cli": "^8.4.0",
-    "@capacitor/core": "^8.4.0"
+    "@capacitor/core": "^8.4.0",
+    "lz4-asm": "^0.4.2",
+    "lz4js": "^0.2.0",
+    "rbx-reader": "^1.5.10",
+    "rbxm-parser": "^1.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayobro-hash/mrtlc-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ayobro-hash/mrtlc-app/issues"
+  },
+  "homepage": "https://github.com/ayobro-hash/mrtlc-app#readme",
+  "devDependencies": {
+    "esbuild": "^0.28.1"
   }
 }
