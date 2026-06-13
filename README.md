@@ -1,6 +1,7 @@
 # MRTLC Nexus Engine v4.0
 
 i have no word to say
+
 ---
 
 ## 🚀 Native Performance Profile
@@ -21,5 +22,5 @@ Nexus 4.0 utilizes direct mobile browser environment allocations to interpret ra
 * **Zero-Network Dependability:** Completely operational offline. No cloud APIs, no telemetry packets, no data leakage.
 
 ---
-
+> ⚠️ **Note on Installation:** Because this APK is compiled via GitHub Actions and targets code parsing, Google Play Protect may show an "Unknown Developer" warning. This is normal for open-source developer tools. You can safely bypass this by clicking **"Install Anyway"**. You can review the entire source code right here in this repository to verify its safety!
 * maintained by ayobro-hash
