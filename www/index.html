@@ -3,63 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MRTLC // CORE V3</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MRTLC Parser Engine</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body { 
+            background: #0d1117; 
+            color: #c9d1d9; 
+            font-family: 'Consolas', 'Courier New', monospace; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px; 
+            overflow: hidden;
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            flex-shrink: 0;
+        }
+        h2 {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #58a6ff;
+        }
+        .btn { 
+            background: #238636; 
+            color: white; 
+            border: 1px solid rgba(240,246,252,0.1); 
+            padding: 10px 24px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .btn:hover { 
+            background: #2ea44f; 
+        }
+        .container { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            flex-grow: 1;
+            height: calc(100% - 60px);
+        }
+        textarea { 
+            background: #161b22; 
+            color: #e6edf3; 
+            border: 1px solid #30363d; 
+            padding: 15px; 
+            font-family: inherit; 
+            font-size: 14px; 
+            resize: none; 
+            outline: none; 
+            border-radius: 6px;
+        }
+        textarea:focus {
+            border-color: #58a6ff;
+        }
+        .output { 
+            background: #010409; 
+            color: #7ee787; 
+            border: 1px solid #30363d; 
+            padding: 15px; 
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+            border-radius: 6px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <div class="ide-container">
-        
-        <nav class="activity-bar">
-            <div class="icon active" title="Explorer">📁</div>
-            <div class="icon" title="Cloud Vault">☁️</div>
-            <div class="icon" title="Settings">⚙️</div>
-        </nav>
 
-        <main class="editor-area">
-            <div class="tab-bar">
-                <div class="tab active">
-                    <input type="text" id="filename-input" value="main_script.lua">
-                    <span class="close-tab">×</span>
-                </div>
-                <div class="action-buttons">
-                    <button id="sync-btn" class="btn btn-glow">
-                        <span class="cloud-icon">☁️</span> SYNC UPLINK
-                    </button>
-                </div>
-            </div>
-
-            <div class="code-container">
-                <div class="line-numbers" id="line-numbers">1</div>
-                <textarea id="editor" spellcheck="false" placeholder="-- Initialize core sequence..."></textarea>
-            </div>
-        </main>
-
-        <section class="terminal-drawer">
-            <div class="terminal-header">
-                <span>TERMINAL // OUTPUT</span>
-                <div class="terminal-actions">
-                    <button id="clear-term" class="icon-btn">🗑️</button>
-                </div>
-            </div>
-            <div id="console-output" class="terminal-body">
-                <div class="log system">MRTLC Core v3.0 initialized.</div>
-                <div class="log system">Standing by for local input...</div>
-            </div>
-        </section>
-
-        <footer class="status-bar">
-            <div class="status-left">
-                <span id="status-indicator" class="dot offline"></span>
-                <span id="status-text">Disconnected</span>
-            </div>
-            <div class="status-right">
-                <span>UTF-8</span>
-                <span>Lua/MRTLC</span>
-                <span>Termux::Node</span>
-            </div>
-        </footer>
+    <div class="header">
+        <h2>MRTLC // ROBLOX DECODER</h2>
+        <button id="parse-btn" class="btn">RUN PARSER</button>
     </div>
 
-    <script type="module" src="js/app-ui.js"></script>
+    <div class="container">
+        <textarea id="input-box" placeholder="Paste your raw model data / XML / binary stream text here..."></textarea>
+        <div id="output-box" class="output">Awaiting input stream...</div>
+    </div>
+
+    <script type="module" src="js/nexus-parser.js"></script>
 </body>
 </html>
