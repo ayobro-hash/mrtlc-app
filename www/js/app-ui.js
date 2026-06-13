@@ -1,50 +1,66 @@
 import { CloudSyncService } from './CloudSyncService.js';
 
-// 1. Initialize the Worker
-const nexusWorker = new Worker(new URL('./nexus-worker.js', import.meta.url));
+const nexusWorker = new Worker(new URL('./nexus-worker.js', import.meta.url), { type: 'module' });
 
-// 2. Main UI Event Controller
-const syncBtn = document.getElementById('sync-btn');
-const editor = document.getElementById('editor'); // Your code input
-const fileNameInput = document.getElementById('filename-input');
+document.addEventListener('DOMContentLoaded', () => {
+    const syncBtn = document.getElementById('sync-btn');
+    const editor = document.getElementById('editor');
+    const filenameInput = document.getElementById('filename-input');
+    const consoleOutput = document.getElementById('console-output');
+    const statusIndicator = document.getElementById('status-indicator');
+    const statusText = document.getElementById('status-text');
 
-syncBtn.addEventListener('click', async () => {
-    const code = editor.value;
-    const filename = fileNameInput.value;
-
-    if (!code || !filename) {
-        alert("Please enter code and a filename.");
-        return;
-    }
-
-    // Tell the worker to encrypt
-    nexusWorker.postMessage({ 
-        type: 'ENCRYPT', 
-        payload: { text: code, key: await getOrGenerateKey() } 
-    });
-});
-
-// 3. Listen for responses from the Worker
-nexusWorker.onmessage = async (e) => {
-    const { type, data } = e.data;
-
-    if (type === 'ENCRYPT_SUCCESS') {
-        // Now send to Supabase
-        const result = await CloudSyncService.syncScript(fileNameInput.value, data);
+    // Utility function to update status component elements
+    function setUIStatus(state, message) {
+        statusIndicator.className = `dot ${state}`;
+        statusText.textContent = `Cloud Status: ${message}`;
         
-        if (result.success) {
-            alert("Success: Script is encrypted and stored in the cloud.");
-        } else {
-            alert("Error: Failed to sync with Supabase.");
-        }
-    } else if (type === 'ERROR') {
-        console.error("Worker Error:", e.data.error);
+        const timestamp = new Date().toLocaleTimeString();
+        consoleOutput.innerHTML += `\n[${timestamp}] > ${message}`;
+        consoleOutput.scrollTop = consoleOutput.scrollHeight; // Auto scroll
     }
-};
 
-// 4. Helper for Master Key (Keep this in your UI or a utility file)
-async function getOrGenerateKey() {
-    let key = localStorage.getItem('mrtlc_master_key');
-    // ... (logic from earlier)
-    return key;
-}
+    syncBtn.addEventListener('click', () => {
+        const scriptData = editor.value.trim();
+        const filename = filenameInput.value.trim();
+
+        if (!scriptData) {
+            setUIStatus('error', 'Operation aborted: Editor buffer empty.');
+            return;
+        }
+
+        // Lock button UI during runtime execution
+        syncBtn.disabled = true;
+        setUIStatus('syncing', 'Encoding asset stream...');
+
+        // Pass payload sequence over thread wall to worker pipeline
+        nexusWorker.postMessage({
+            type: 'ENCRYPT',
+            payload: { text: scriptData }
+        });
+    });
+
+    // Intercept callback loops originating from background worker core
+    nexusWorker.onmessage = async (e) => {
+        const { type, data } = e.data;
+
+        if (type === 'ENCRYPT_SUCCESS') {
+            setUIStatus('syncing', 'Transmitting payload packet to Supabase infrastructure...');
+            
+            const filename = filenameInput.value.trim();
+            const result = await CloudSyncService.sync(filename, data);
+            
+            // React clean based on network completion flags
+            if (result.success) {
+                setUIStatus('online', 'Data verification confirmed. Secure sync complete!');
+            } else {
+                setUIStatus('error', 'Database write operation rejected.');
+            }
+        } else {
+            setUIStatus('error', 'Worker internal calculation exception.');
+        }
+
+        // Restore click interactions
+        syncBtn.disabled = false;
+    };
+});
