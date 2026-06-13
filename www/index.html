@@ -3,42 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MRTLC Core Studio</title>
+    <title>MRTLC // CORE V3</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="logo">MRTLC // CORE</div>
-            <div class="file-settings">
-                <input type="text" id="filename-input" placeholder="script_name.lua" value="untitled.lua">
-            </div>
-            <div class="actions">
-                <button id="sync-btn" class="btn btn-primary">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
-                    Sync to Cloud
-                </button>
-            </div>
-        </header>
+    <div class="ide-container">
+        
+        <nav class="activity-bar">
+            <div class="icon active" title="Explorer">📁</div>
+            <div class="icon" title="Cloud Vault">☁️</div>
+            <div class="icon" title="Settings">⚙️</div>
+        </nav>
 
-        <main class="workspace">
-            <section class="panel editor-panel">
-                <div class="panel-header">Source Code Editor</div>
-                <textarea id="editor" placeholder="Paste your code or decompiler raw input here..."></textarea>
-            </section>
-            
-            <section class="panel output-panel">
-                <div class="panel-header">Console Output / Decompiled Stream</div>
-                <div id="console-output" class="console-box">> System ready. Awaiting sequence...</div>
-            </section>
+        <main class="editor-area">
+            <div class="tab-bar">
+                <div class="tab active">
+                    <input type="text" id="filename-input" value="main_script.lua">
+                    <span class="close-tab">×</span>
+                </div>
+                <div class="action-buttons">
+                    <button id="sync-btn" class="btn btn-glow">
+                        <span class="cloud-icon">☁️</span> SYNC UPLINK
+                    </button>
+                </div>
+            </div>
+
+            <div class="code-container">
+                <div class="line-numbers" id="line-numbers">1</div>
+                <textarea id="editor" spellcheck="false" placeholder="-- Initialize core sequence..."></textarea>
+            </div>
         </main>
 
-        <footer class="status-bar">
-            <div class="status-item">
-                <span id="status-indicator" class="dot offline"></span>
-                <span id="status-text">Cloud Status: Idle</span>
+        <section class="terminal-drawer">
+            <div class="terminal-header">
+                <span>TERMINAL // OUTPUT</span>
+                <div class="terminal-actions">
+                    <button id="clear-term" class="icon-btn">🗑️</button>
+                </div>
             </div>
-            <div class="status-item">Termux Node Environment Active</div>
+            <div id="console-output" class="terminal-body">
+                <div class="log system">MRTLC Core v3.0 initialized.</div>
+                <div class="log system">Standing by for local input...</div>
+            </div>
+        </section>
+
+        <footer class="status-bar">
+            <div class="status-left">
+                <span id="status-indicator" class="dot offline"></span>
+                <span id="status-text">Disconnected</span>
+            </div>
+            <div class="status-right">
+                <span>UTF-8</span>
+                <span>Lua/MRTLC</span>
+                <span>Termux::Node</span>
+            </div>
         </footer>
     </div>
 
