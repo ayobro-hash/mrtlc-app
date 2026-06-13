@@ -1,5 +1,6 @@
 {
   "appId": "com.mrtlc.nexus",
-  "appName": "MRTLC Core",
-  "webDir": "www"
+  "appName": "MRTLC",
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
