@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MRTLC Parser Engine</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             background: #0d1117; 
             color: #c9d1d9; 
@@ -27,11 +23,23 @@
             margin-bottom: 20px; 
             flex-shrink: 0;
         }
-        h2 {
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-            color: #58a6ff;
+        h2 { font-size: 1.2rem; letter-spacing: 1px; color: #58a6ff; }
+        .controls { display: flex; gap: 15px; align-items: center; }
+        
+        /* Styled File Input */
+        .file-label {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
         }
+        .file-label:hover { background: #30363d; }
+        #file-input { display: none; }
+
         .btn { 
             background: #238636; 
             color: white; 
@@ -43,9 +51,8 @@
             font-family: inherit;
             transition: background 0.2s;
         }
-        .btn:hover { 
-            background: #2ea44f; 
-        }
+        .btn:hover { background: #2ea44f; }
+        
         .container { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -64,9 +71,7 @@
             outline: none; 
             border-radius: 6px;
         }
-        textarea:focus {
-            border-color: #58a6ff;
-        }
+        textarea:focus { border-color: #58a6ff; }
         .output { 
             background: #010409; 
             color: #7ee787; 
@@ -83,11 +88,16 @@
 
     <div class="header">
         <h2>MRTLC // ROBLOX DECODER</h2>
-        <button id="parse-btn" class="btn">RUN PARSER</button>
+        <div class="controls">
+            <label for="file-input" class="file-label">📁 OPEN ROBLOX FILE</label>
+            <input type="file" id="file-input" accept=".rbxm,.rbxl,.rbxmx,.rbxlx">
+            
+            <button id="parse-btn" class="btn">RUN PARSER</button>
+        </div>
     </div>
 
     <div class="container">
-        <textarea id="input-box" placeholder="Paste your raw model data / XML / binary stream text here..."></textarea>
+        <textarea id="input-box" placeholder="Paste your Roblox XML here, OR use the file button above to upload binary models directly..."></textarea>
         <div id="output-box" class="output">Awaiting input stream...</div>
     </div>
 
