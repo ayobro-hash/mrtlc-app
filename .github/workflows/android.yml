@@ -28,6 +28,7 @@ jobs:
 
     - name: Run Android Production Build
       run: |
+        npx cap add android
         npx cap sync
         cd android
         chmod +x gradlew
