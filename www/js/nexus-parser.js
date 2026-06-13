@@ -1,34 +1,22 @@
-/**
- * nexus-parser.js
- * The pure "Brain" of the decompiler.
- * It is completely unaware of the Cloud or LocalStorage.
- */
+import { RobloxXmlParser } from './roblox-xml.js';
+import { RobloxBinaryParser } from './roblox-binary.js';
 
 export const NexusParser = {
-    // 1. Core Logic: The only thing that matters
-    parse(rawInput) {
-        if (!rawInput) throw new Error("No input provided");
+    async parse(rawData) {
+        if (!rawData || !rawData.trim()) {
+            throw new Error("Input buffer is completely empty.");
+        }
 
-        // Perform your complex decompiler operations here
-        const processedCode = this._extractLogic(rawInput);
-        const metadata = this._extractMetadata(rawInput);
+        // Detect Format: Roblox Binary files always start with the "ROBLOX" magic header
+        if (rawData.startsWith("ROBLOX")) {
+            return await RobloxBinaryParser.decode(rawData);
+        } 
+        
+        // Detect Format: Check if it's standard XML structure
+        if (rawData.trim().startsWith("<") || rawData.includes("<roblox")) {
+            return RobloxXmlParser.decode(rawData);
+        }
 
-        return {
-            content: processedCode,
-            meta: metadata,
-            timestamp: new Date().toISOString()
-        };
-    },
-
-    // 2. Internal logic (Private methods)
-    _extractLogic(input) {
-        // Your actual decompiler/parsing math goes here
-        // Example: return decompile(input);
-        return input.replace(/hidden_marker/g, ""); 
-    },
-
-    _extractMetadata(input) {
-        // Extract names, variables, etc.
-        return { length: input.length };
+        throw new Error("Unsupported format. Input must be a valid Roblox XML or Binary stream.");
     }
 };
