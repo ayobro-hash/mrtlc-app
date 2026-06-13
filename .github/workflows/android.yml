@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: # This adds a manual "Run" button in GitHub Actions just in case
 
 jobs:
   build:
@@ -15,7 +16,7 @@ jobs:
     - name: Set up Java JDK 17
       uses: actions/setup-java@v4
       with:
-        distribution: 'temurin' # Switched to standard eclipse temurin
+        distribution: 'temurin'
         java-version: '21'
 
     - name: Setup Node.js Runtime
@@ -26,10 +27,12 @@ jobs:
     - name: Install Project Dependencies
       run: npm install
 
+    - name: Generate Custom App Icons
+      run: npx @capacitor/assets generate --android
+
     - name: Run Android Production Build
       run: |
-        npx cap add android
-        npx cap sync
+        npx cap sync android
         cd android
         chmod +x gradlew
         ./gradlew assembleDebug
