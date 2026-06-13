@@ -3,64 +3,90 @@ import { CloudSyncService } from './CloudSyncService.js';
 const nexusWorker = new Worker(new URL('./nexus-worker.js', import.meta.url), { type: 'module' });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // UI Elements
     const syncBtn = document.getElementById('sync-btn');
     const editor = document.getElementById('editor');
+    const lineNumbers = document.getElementById('line-numbers');
     const filenameInput = document.getElementById('filename-input');
     const consoleOutput = document.getElementById('console-output');
-    const statusIndicator = document.getElementById('status-indicator');
     const statusText = document.getElementById('status-text');
 
-    // Utility function to update status component elements
-    function setUIStatus(state, message) {
-        statusIndicator.className = `dot ${state}`;
-        statusText.textContent = `Cloud Status: ${message}`;
-        
-        const timestamp = new Date().toLocaleTimeString();
-        consoleOutput.innerHTML += `\n[${timestamp}] > ${message}`;
-        consoleOutput.scrollTop = consoleOutput.scrollHeight; // Auto scroll
+    // 1. UI Polish: Auto-updating Line Numbers
+    editor.addEventListener('input', () => {
+        const lines = editor.value.split('\n').length;
+        lineNumbers.innerHTML = Array(lines).fill(0).map((_, i) => i + 1).join('<br>');
+    });
+
+    // 2. Terminal Logger Helper
+    function terminalLog(message, type = 'system') {
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+        const logEntry = document.createElement('div');
+        logEntry.className = `log ${type}`;
+        logEntry.textContent = `[${time}] ${message}`;
+        consoleOutput.appendChild(logEntry);
+        consoleOutput.scrollTop = consoleOutput.scrollHeight; // Auto-scroll down
     }
 
-    syncBtn.addEventListener('click', () => {
-        const scriptData = editor.value.trim();
-        const filename = filenameInput.value.trim();
+    // 3. Status Bar Helper
+    function updateStatus(message, btnText = "SYNC UPLINK") {
+        statusText.textContent = message;
+        syncBtn.innerHTML = `<span class="cloud-icon">☁️</span> ${btnText}`;
+    }
 
-        if (!scriptData) {
-            setUIStatus('error', 'Operation aborted: Editor buffer empty.');
+    // 4. The Main Click Event
+    syncBtn.addEventListener('click', () => {
+        const scriptData = editor.value;
+        const filename = filenameInput.value;
+
+        if (!scriptData.trim()) {
+            terminalLog('ERR: Cannot sync empty buffer.', 'error');
             return;
         }
 
-        // Lock button UI during runtime execution
+        // Lock UI
         syncBtn.disabled = true;
-        setUIStatus('syncing', 'Encoding asset stream...');
+        terminalLog(`Initiating sequence for [${filename}]...`);
+        updateStatus('Encrypting...', 'WORKING...');
 
-        // Pass payload sequence over thread wall to worker pipeline
+        // Send to Worker
         nexusWorker.postMessage({
             type: 'ENCRYPT',
             payload: { text: scriptData }
         });
     });
 
-    // Intercept callback loops originating from background worker core
+    // 5. Worker Response Handler
     nexusWorker.onmessage = async (e) => {
         const { type, data } = e.data;
 
         if (type === 'ENCRYPT_SUCCESS') {
-            setUIStatus('syncing', 'Transmitting payload packet to Supabase infrastructure...');
+            terminalLog('Encryption matrix locked. Establishing Supabase uplink...');
+            updateStatus('Uploading...');
             
-            const filename = filenameInput.value.trim();
+            const filename = filenameInput.value;
             const result = await CloudSyncService.sync(filename, data);
             
-            // React clean based on network completion flags
             if (result.success) {
-                setUIStatus('online', 'Data verification confirmed. Secure sync complete!');
+                terminalLog(`SUCCESS: Packet [${filename}] securely written to cloud.`, 'success');
+                updateStatus('Sync Complete', 'SYNCED');
             } else {
-                setUIStatus('error', 'Database write operation rejected.');
+                terminalLog('ERR: Cloud packet rejection. Check database RLS.', 'error');
+                updateStatus('Sync Failed', 'RETRY UPLINK');
             }
         } else {
-            setUIStatus('error', 'Worker internal calculation exception.');
+            terminalLog('ERR: Worker thread calculation failed.', 'error');
+            updateStatus('Worker Error', 'ERROR');
         }
 
-        // Restore click interactions
         syncBtn.disabled = false;
+        
+        // Reset button text after 3 seconds
+        setTimeout(() => updateStatus('Ready', 'SYNC UPLINK'), 3000);
     };
+
+    // Clear Terminal button
+    document.getElementById('clear-term').addEventListener('click', () => {
+        consoleOutput.innerHTML = '';
+        terminalLog('Terminal cleared.');
+    });
 });
