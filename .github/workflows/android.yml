@@ -28,7 +28,12 @@ jobs:
       run: npm install
 
     - name: Generate Custom App Icons
-      run: npx @capacitor/assets generate --android
+      run: |
+        npm install @capacitor/assets
+        if [ -f "assets/icon.png" ]; then
+          cp assets/icon.png assets/icon-only.png
+        fi
+        npx @capacitor/assets generate --android
 
     - name: Run Android Production Build
       run: |
