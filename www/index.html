@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MRTLC NEXUS APK</title>
+    <style>
+        /* SOLID STATE THEME 
+           No glass, no blur, no heavy shadows. 100% flat performance.
+        */
+        :root {
+            --bg-base: #090a0f;
+            --bg-surface: #13151f;
+            --accent-main: #00d2ff;
+            --accent-success: #00fa70;
+            --text-primary: #ffffff;
+            --text-muted: #788099;
+            --border-line: #222638;
+        }
+
+        body {
+            margin: 0;
+            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: monospace;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 12px;
+        }
+
+        /* --- FLAT HEADER --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-line);
+            padding-bottom: 12px;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            background-color: #1a1e2d;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-line);
+            font-weight: bold;
+        }
+
+        /* --- SOLID CARDS --- */
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        /* --- MOUNT BUTTON --- */
+        .upload-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #0f111a;
+            border: 2px dashed var(--border-line);
+            border-radius: 6px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: background-color 0.1s, border-color 0.1s;
+        }
+
+        .upload-zone:active {
+            background-color: #1a1e2d;
+            border-color: var(--accent-main);
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .upload-text {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        input[type="file"] { display: none; }
+
+        /* --- TERMINAL CONSOLE --- */
+        .console-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .console-box {
+            width: 100%;
+            height: 340px;
+            background-color: #040508;
+            color: #a9b1d6;
+            border: 1px solid var(--border-line);
+            border-radius: 6px;
+            padding: 12px;
+            box-sizing: border-box;
+            font-family: monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            resize: none;
+            outline: none;
+        }
+
+        /* --- ACTION BUTTON --- */
+        .btn-primary {
+            width: 100%;
+            background-color: var(--accent-main);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: opacity 0.1s;
+        }
+
+        .btn-primary:active {
+            opacity: 0.7;
+        }
+
+        .btn-primary:disabled {
+            background-color: #222638;
+            color: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">MRTLC // CORE</h1>
+            <span class="status-badge" id="engine-status">STANDBY</span>
+        </div>
+
+        <div class="card">
+            <label for="file-input" class="upload-zone" id="file-status-box">
+                <svg class="upload-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span class="upload-text">MOUNT .RBXM TARGET</span>
+            </label>
+            <input type="file" id="file-input" onchange="processFileSelection(this)">
+        </div>
+
+        <div class="card">
+            <div class="console-top">
+                <span>LOCAL_WORKSPACE</span>
+                <span id="workspace-stats">0 SCRIPTS</span>
+            </div>
+            <textarea class="console-box" id="code-preview-box" readonly placeholder="// System idle. Awaiting payload injection..."></textarea>
+        </div>
+
+        <button class="btn-primary" id="main-compile-btn" disabled onclick="executeNexusCompilation()">
+            EXTRACT PAYLOAD
+        </button>
+    </div>
+
+    <script src="js/app-ui.js"></script>
+</body>
+</html>
