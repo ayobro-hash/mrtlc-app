@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Allows you to manually click "Run workflow" on GitHub
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,20 +27,33 @@ jobs:
     - name: Install Project Dependencies
       run: npm install
 
-    - name: Generate Custom App Icons
-      run: |
-        npm install @capacitor/assets
-        if [ -f "assets/icon.png" ]; then
-          cp assets/icon.png assets/icon-only.png
-        fi
-        npx @capacitor/assets generate --android
-
     - name: Run Android Production Build
       run: |
         if [ ! -d "android" ]; then
           npx cap add android
         fi
         npx cap sync android
+
+    - name: Absolute Force Icon Overwrite
+      run: |
+        # Define all density folders inside the native Android layer
+        DENSITIES=("mdpi" "hdpi" "xhdpi" "xxhdpi" "xxxhdpi")
+        
+        # Loop through and forcefully copy your icon into EVERY single legacy and adaptive slot
+        for density in "${DENSITIES[@]}"; do
+          TARGET_DIR="android/app/src/main/res/mipmap-$density"
+          mkdir -p "$TARGET_DIR"
+          
+          # Legacy square and round icons
+          cp assets/icon-only.png "$TARGET_DIR/ic_launcher.png"
+          cp assets/icon-only.png "$TARGET_DIR/ic_launcher_round.png"
+          
+          # Modern Android Adaptive foreground layers
+          cp assets/icon-only.png "$TARGET_DIR/ic_launcher_foreground.png"
+        done
+
+    - name: Compile Native Android Application
+      run: |
         cd android
         chmod +x gradlew
         ./gradlew assembleDebug
