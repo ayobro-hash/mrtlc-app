@@ -1,60 +1,34 @@
 /**
- * MRTLC CORE NEXUS COUPLER
- * Bridges the custom UI elements directly to the array streams
+ * nexus-parser.js
+ * The pure "Brain" of the decompiler.
+ * It is completely unaware of the Cloud or LocalStorage.
  */
-async function executeNexusCompilation() {
-    const fileInput = document.getElementById('file-input');
-    if (!fileInput || !fileInput.files[0]) return;
 
-    const file = fileInput.files[0];
-    const previewBox = document.getElementById('code-preview-box');
-    const engineStatus = document.getElementById('engine-status');
+export const NexusParser = {
+    // 1. Core Logic: The only thing that matters
+    parse(rawInput) {
+        if (!rawInput) throw new Error("No input provided");
 
-    if (previewBox) previewBox.value = "⚡ INITIALIZING NATIVE APK DECRYPTION STREAM...";
-    if (engineStatus) {
-        engineStatus.innerText = "RUNNING";
-        engineStatus.style.color = "var(--neon-cyan)";
+        // Perform your complex decompiler operations here
+        const processedCode = this._extractLogic(rawInput);
+        const metadata = this._extractMetadata(rawInput);
+
+        return {
+            content: processedCode,
+            meta: metadata,
+            timestamp: new Date().toISOString()
+        };
+    },
+
+    // 2. Internal logic (Private methods)
+    _extractLogic(input) {
+        // Your actual decompiler/parsing math goes here
+        // Example: return decompile(input);
+        return input.replace(/hidden_marker/g, ""); 
+    },
+
+    _extractMetadata(input) {
+        // Extract names, variables, etc.
+        return { length: input.length };
     }
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        try {
-            const buffer = e.target.result;
-            
-            // Execute the specialized, cool-running APK calculation core we built
-            await processApkBinaryData(buffer);
-            
-            if (engineStatus) {
-                engineStatus.innerText = "SUCCESS";
-                engineStatus.style.color = "var(--neon-green)";
-            }
-        } catch (err) {
-            if (previewBox) previewBox.value = `❌ PIPELINE ERROR:\n${err.message}`;
-            if (engineStatus) {
-                engineStatus.innerText = "CRASH";
-                engineStatus.style.color = "#ff3333";
-            }
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
-}
-
-/**
- * UPDATES FILE BUTTON VISUAL STATE ON SELECTION
- */
-function processFileSelection(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    const statusBox = document.getElementById('file-status-box');
-    if (statusBox) {
-        // Change text inside our neon dashed box to indicate successful mount
-        statusBox.innerHTML = `🏁 READY: [${file.name.toUpperCase()}]`;
-        statusBox.style.borderColor = "var(--neon-green)";
-    }
-
-    // Enable the compile button now that a file is fully mounted
-    const compileBtn = document.getElementById('main-compile-btn');
-    if (compileBtn) compileBtn.disabled = false;
-}
+};
