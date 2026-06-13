@@ -12,13 +12,13 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Set up Java Environment
+    - name: Set up Java JDK 17
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
+        distribution: 'temurin' # Switched to standard eclipse temurin
         java-version: '17'
 
-    - name: Setup Node.js
+    - name: Setup Node.js Runtime
       uses: actions/setup-node@v4
       with:
         node-version: '22'
@@ -29,7 +29,9 @@ jobs:
     - name: Run Android Production Build
       run: |
         npx cap sync
-        cd android && ./gradlew assembleDebug
+        cd android
+        chmod +x gradlew
+        ./gradlew assembleDebug
 
     - name: Upload Finished APK Artifact
       uses: actions/upload-artifact@v4
