@@ -1,9 +1,9 @@
 import { CloudSyncService } from './CloudSyncService.js';
 
+// URL matches relatively inside the js folder now
 const nexusWorker = new Worker(new URL('./nexus-worker.js', import.meta.url), { type: 'module' });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // UI Elements
     const syncBtn = document.getElementById('sync-btn');
     const editor = document.getElementById('editor');
     const lineNumbers = document.getElementById('line-numbers');
@@ -11,29 +11,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const consoleOutput = document.getElementById('console-output');
     const statusText = document.getElementById('status-text');
 
-    // 1. UI Polish: Auto-updating Line Numbers
     editor.addEventListener('input', () => {
         const lines = editor.value.split('\n').length;
         lineNumbers.innerHTML = Array(lines).fill(0).map((_, i) => i + 1).join('<br>');
     });
 
-    // 2. Terminal Logger Helper
     function terminalLog(message, type = 'system') {
         const time = new Date().toLocaleTimeString('en-US', { hour12: false });
         const logEntry = document.createElement('div');
         logEntry.className = `log ${type}`;
         logEntry.textContent = `[${time}] ${message}`;
         consoleOutput.appendChild(logEntry);
-        consoleOutput.scrollTop = consoleOutput.scrollHeight; // Auto-scroll down
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
     }
 
-    // 3. Status Bar Helper
     function updateStatus(message, btnText = "SYNC UPLINK") {
         statusText.textContent = message;
         syncBtn.innerHTML = `<span class="cloud-icon">☁️</span> ${btnText}`;
     }
 
-    // 4. The Main Click Event
     syncBtn.addEventListener('click', () => {
         const scriptData = editor.value;
         const filename = filenameInput.value;
@@ -43,19 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Lock UI
         syncBtn.disabled = true;
         terminalLog(`Initiating sequence for [${filename}]...`);
         updateStatus('Encrypting...', 'WORKING...');
 
-        // Send to Worker
         nexusWorker.postMessage({
             type: 'ENCRYPT',
             payload: { text: scriptData }
         });
     });
 
-    // 5. Worker Response Handler
     nexusWorker.onmessage = async (e) => {
         const { type, data } = e.data;
 
@@ -79,12 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         syncBtn.disabled = false;
-        
-        // Reset button text after 3 seconds
         setTimeout(() => updateStatus('Ready', 'SYNC UPLINK'), 3000);
     };
 
-    // Clear Terminal button
     document.getElementById('clear-term').addEventListener('click', () => {
         consoleOutput.innerHTML = '';
         terminalLog('Terminal cleared.');
